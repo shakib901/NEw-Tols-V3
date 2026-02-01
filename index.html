@@ -11,9 +11,6 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <!-- LibTL Ad SDK -->
     <script src='//libtl.com/sdk.js' data-zone='10551429' data-sdk='show_10551429' async></script>
     
@@ -34,14 +31,6 @@
                 background: rgba(20,20,30,0.85);
                 border: 1px solid rgba(255,255,255,0.1);
             }
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.8); opacity: 0; }
-            50% { transform: translateY(-80px) scale(1.3); opacity: 1; }
-            100% { transform: translateY(-160px) scale(1); opacity: 0; }
-        }
-        .float-up {
-            animation: floatUp 1.4s ease-out forwards;
         }
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
@@ -131,8 +120,9 @@
         const fullCircumference = 603;
         
         const user = Telegram.WebApp.initDataUnsafe.user;
-        const firstName = user?.first_name || 'Friend';
-        document.getElementById('greeting').textContent = `Hello, ${firstName}! 👋`;
+        // Username thakle @username show korbe, na thakle first_name
+        const displayName = user?.username ? `@${user.username}` : (user?.first_name || 'Friend');
+        document.getElementById('greeting').textContent = `Hello, ${displayName}! 👋`;
         
         function loadCount() {
             const today = new Date().toDateString();
@@ -170,29 +160,10 @@
             }
         }
         
-        function showFloatingPlus() {
-            const el = document.createElement('div');
-            el.textContent = '+1';
-            el.className = 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-bold text-green-500 pointer-events-none z-50 float-up';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1400);
-        }
-        
-        function celebrate() {
-            confetti({
-                particleCount: 120,
-                spread: 80,
-                origin: { y: 0.6 },
-                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b']
-            });
-        }
-        
         function incrementCount() {
             adsCount++;
             localStorage.setItem('adsCount', adsCount.toString());
             updateUI();
-            showFloatingPlus();
-            celebrate();
             
             if (adsCount >= maxAds) {
                 setTimeout(() => document.getElementById('modal').classList.remove('hidden'), 1000);
@@ -213,12 +184,10 @@
             
             Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             
-            // Call with or without 'pop'
             const adPromise = type === 'pop' ? show_10551429('pop') : show_10551429();
             
             adPromise
                 .then(() => {
-                    // Reward only if user watched fully
                     incrementCount();
                     Telegram.WebApp.HapticFeedback.notificationOccurred('success');
                 })
@@ -228,10 +197,7 @@
                 });
         }
         
-        // Button 1: Rewarded Interstitial (no param)
         document.getElementById('watchInterstitialBtn').onclick = () => showAd('');
-        
-        // Button 2: Rewarded Popup (with 'pop')
         document.getElementById('watchPopupBtn').onclick = () => showAd('pop');
         
         window.onload = () => {
