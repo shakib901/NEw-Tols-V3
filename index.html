@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TooL H4X0R v3</title>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Monetag SDK - Replace YOUR_ZONE_ID -->
+    <script src="https://tg-sdk.monetag.com/sdk.js" 
+            data-zone="YOUR_ZONE_ID" 
+            data-sdk="mtgShowAd" 
+            async></script>
+    
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, var(--tg-bg), rgba(0,0,0,0.05));
+        }
+        .card {
+            backdrop-filter: blur(16px);
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.3);
+            max-width: 380px;
+            width: 95%;
+        }
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: rgba(20,20,30,0.85);
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { transform: translateY(-80px) scale(1.3); opacity: 1; }
+            100% { transform: translateY(-160px) scale(1); opacity: 0; }
+        }
+        .float-up {
+            animation: floatUp 1.4s ease-out forwards;
+        }
+        /* Dynamic button pulse when enabled */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .btn-dynamic {
+            animation: pulseGlow 2s infinite;
+        }
+        .btn-dynamic-green {
+            animation: pulseGlow 2s infinite;
+            animation-delay: 0.5s;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        
+        // Telegram theme
+        const tp = Telegram.WebApp.themeParams;
+        document.documentElement.style.setProperty('--tg-bg', tp.bg_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-text', tp.text_color || '#000000');
+        document.documentElement.style.setProperty('--tg-button', tp.button_color || '#2481cc');
+        document.documentElement.style.setProperty('--tg-button-text', tp.button_text_color || '#ffffff');
+    </script>
+    
+    <!-- Centered Compact Card -->
+    <div class="card rounded-3xl shadow-2xl p-8 text-center">
+        
+        <!-- Greeting -->
+        <h2 id="greeting" class="text-2xl font-semibold mb-4 opacity-0 translate-y-6 transition-all duration-800 ease-out"></h2>
+        
+        <!-- Headline -->
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent opacity-0 translate-y-6 transition-all duration-1000 ease-out delay-200">
+            my tool v3
+        </h1>
+        
+        <!-- Subtitle -->
+        <p class="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-8 opacity-0 translate-y-6 transition-all duration-800 ease-out delay-300">
+            Watch ads & earn rewards!
+        </p>
+        
+        <!-- Compact Circular Progress -->
+        <div class="relative w-56 h-56 mx-auto mb-10 opacity-0 scale-90 transition-all duration-1200 ease-out delay-500 drop-shadow-xl">
+            <svg class="w-56 h-56 -rotate-90">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#10b981" />
+                        <stop offset="100%" stop-color="#3b82f6" />
+                    </linearGradient>
+                </defs>
+                <circle cx="112" cy="112" r="96" stroke="#e5e7eb" dark:stroke="#374151" stroke-width="28" fill="none"/>
+                <circle id="progressCircle" cx="112" cy="112" r="96" stroke="url(#gradient)" stroke-width="28" fill="none"
+                        stroke-dasharray="603" stroke-dashoffset="603" stroke-linecap="round"
+                        class="transition-all duration-1200 ease-out"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div id="counter" class="text-5xl font-bold">0</div>
+                <div class="text-base text-gray-600 dark:text-gray-400 mt-1">/ 60 Today</div>
+            </div>
+        </div>
+        
+        <!-- Smaller Dynamic Buttons -->
+        <div class="grid grid-cols-1 gap-5 opacity-0 translate-y-8 transition-all duration-1000 ease-out delay-700">
+            <button id="watchAdBtn" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-dynamic">
+                Watch Ads
+            </button>
+            <button id="watchRewardedBtn" 
+                    class="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 active:scale-95 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-dynamic-green">
+                Watch Rewarded Ads
+            </button>
+        </div>
+    </div>
+    
+    <!-- Limit Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl transform scale-95 transition-all duration-300">
+            <h2 class="text-3xl font-bold mb-5 text-red-600 text-center">Limit Reached!</h2>
+            <p class="text-lg mb-8 text-center">60 ads watched today.<br>Back tomorrow!</p>
+            <button onclick="document.getElementById('modal').classList.add('hidden')" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-2xl text-xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all">
+                OK
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let adsCount = 0;
+        const maxAds = 60;
+        const fullCircumference = 603; // 2 * π * 96 ≈ 603
+        
+        // User greeting
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        const firstName = user?.first_name || 'Friend';
+        document.getElementById('greeting').textContent = `Hello, ${firstName}! 👋`;
+        
+        // Load count
+        function loadCount() {
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('adsDate');
+            const savedCount = localStorage.getItem('adsCount');
+            
+            if (savedDate === today && savedCount) {
+                adsCount = parseInt(savedCount);
+            } else {
+                adsCount = 0;
+                localStorage.setItem('adsDate', today);
+                localStorage.setItem('adsCount', '0');
+            }
+            updateUI();
+        }
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('counter').textContent = adsCount;
+            const progress = (adsCount / maxAds) * 100;
+            const offset = fullCircumference - (fullCircumference * progress / 100);
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+            
+            // Add/remove dynamic pulse
+            const btn1 = document.getElementById('watchAdBtn');
+            const btn2 = document.getElementById('watchRewardedBtn');
+            if (adsCount >= maxAds) {
+                disableButtons();
+                btn1.classList.remove('btn-dynamic');
+                btn2.classList.remove('btn-dynamic-green');
+            } else {
+                enableButtons();
+                btn1.classList.add('btn-dynamic');
+                btn2.classList.add('btn-dynamic-green');
+            }
+        }
+        
+        function disableButtons() {
+            document.getElementById('watchAdBtn').disabled = true;
+            document.getElementById('watchRewardedBtn').disabled = true;
+        }
+        
+        function enableButtons() {
+            document.getElementById('watchAdBtn').disabled = false;
+            document.getElementById('watchRewardedBtn').disabled = false;
+        }
+        
+        // Floating +1
+        function showFloatingPlus() {
+            const el = document.createElement('div');
+            el.textContent = '+1';
+            el.className = 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-bold text-green-500 pointer-events-none z-50 float-up';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1400);
+        }
+        
+        // Confetti
+        function celebrate() {
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b']
+            });
+        }
+        
+        // Increment
+        function incrementCount() {
+            adsCount++;
+            localStorage.setItem('adsCount', adsCount.toString());
+            updateUI();
+            showFloatingPlus();
+            celebrate();
+            
+            if (adsCount >= maxAds) {
+                setTimeout(() => document.getElementById('modal').classList.remove('hidden'), 1000);
+            }
+        }
+        
+        // Show ad
+        function showAd(placement = 'regular') {
+            if (adsCount >= maxAds) {
+                document.getElementById('modal').classList.remove('hidden');
+                return;
+            }
+            
+            if (typeof window.mtgShowAd !== 'function') {
+                alert('Ad SDK loading... Try again.');
+                return;
+            }
+            
+            Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+            
+            window.mtgShowAd({ requestVar: placement })
+                .then(() => {
+                    incrementCount();
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                })
+                .catch((err) => {
+                    console.log('Ad closed:', err);
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                });
+        }
+        
+        document.getElementById('watchAdBtn').onclick = () => showAd('watch_ad');
+        document.getElementById('watchRewardedBtn').onclick = () => showAd('watch_rewarded');
+        
+        // Entrance animations
+        window.onload = () => {
+            loadCount();
+            document.querySelectorAll('[class*="opacity-0"]').forEach((el, i) => {
+                setTimeout(() => {
+                    el.classList.remove('opacity-0', 'translate-y-6', 'translate-y-8', 'scale-90');
+                    el.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+                }, 100 + i * 150);
+            });
+        };
+    </script>
+</body>
+</html>
