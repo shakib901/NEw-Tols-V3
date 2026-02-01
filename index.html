@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TooL H4X0R v3</title>
+    <title>my tool v3</title>
     
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -14,8 +14,8 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- Monetag SDK - Replace YOUR_ZONE_ID -->
-    <script src='//libtl.com/sdk.js' data-zone='10551429' data-sdk='show_10551429'></script>
+    <!-- LibTL Ad SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='10551429' data-sdk='show_10551429' async></script>
     
     <style>
         body {
@@ -43,7 +43,6 @@
         .float-up {
             animation: floatUp 1.4s ease-out forwards;
         }
-        /* Dynamic button pulse when enabled */
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
             70% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
@@ -52,7 +51,7 @@
         .btn-dynamic {
             animation: pulseGlow 2s infinite;
         }
-        .btn-dynamic-green {
+        .btn-dynamic-popup {
             animation: pulseGlow 2s infinite;
             animation-delay: 0.5s;
         }
@@ -63,7 +62,6 @@
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         
-        // Telegram theme
         const tp = Telegram.WebApp.themeParams;
         document.documentElement.style.setProperty('--tg-bg', tp.bg_color || '#ffffff');
         document.documentElement.style.setProperty('--tg-text', tp.text_color || '#000000');
@@ -71,23 +69,18 @@
         document.documentElement.style.setProperty('--tg-button-text', tp.button_text_color || '#ffffff');
     </script>
     
-    <!-- Centered Compact Card -->
     <div class="card rounded-3xl shadow-2xl p-8 text-center">
         
-        <!-- Greeting -->
         <h2 id="greeting" class="text-2xl font-semibold mb-4 opacity-0 translate-y-6 transition-all duration-800 ease-out"></h2>
         
-        <!-- Headline -->
         <h1 class="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent opacity-0 translate-y-6 transition-all duration-1000 ease-out delay-200">
             my tool v3
         </h1>
         
-        <!-- Subtitle -->
         <p class="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-8 opacity-0 translate-y-6 transition-all duration-800 ease-out delay-300">
             Watch ads & earn rewards!
         </p>
         
-        <!-- Compact Circular Progress -->
         <div class="relative w-56 h-56 mx-auto mb-10 opacity-0 scale-90 transition-all duration-1200 ease-out delay-500 drop-shadow-xl">
             <svg class="w-56 h-56 -rotate-90">
                 <defs>
@@ -107,20 +100,20 @@
             </div>
         </div>
         
-        <!-- Smaller Dynamic Buttons -->
         <div class="grid grid-cols-1 gap-5 opacity-0 translate-y-8 transition-all duration-1000 ease-out delay-700">
-            <button id="watchAdBtn" 
+            <!-- Button 1: Rewarded Interstitial -->
+            <button id="watchInterstitialBtn" 
                     class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-dynamic">
-                Watch Ads
+                Watch Interstitial Ads
             </button>
-            <button id="watchRewardedBtn" 
-                    class="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 active:scale-95 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-dynamic-green">
-                Watch Rewarded Ads
+            <!-- Button 2: Rewarded Popup -->
+            <button id="watchPopupBtn" 
+                    class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 active:scale-95 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-dynamic-popup">
+                Watch Popup Ads
             </button>
         </div>
     </div>
     
-    <!-- Limit Modal -->
     <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
         <div class="bg-white dark:bg-gray-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl transform scale-95 transition-all duration-300">
             <h2 class="text-3xl font-bold mb-5 text-red-600 text-center">Limit Reached!</h2>
@@ -135,14 +128,12 @@
     <script>
         let adsCount = 0;
         const maxAds = 60;
-        const fullCircumference = 603; // 2 * π * 96 ≈ 603
+        const fullCircumference = 603;
         
-        // User greeting
         const user = Telegram.WebApp.initDataUnsafe.user;
         const firstName = user?.first_name || 'Friend';
         document.getElementById('greeting').textContent = `Hello, ${firstName}! 👋`;
         
-        // Load count
         function loadCount() {
             const today = new Date().toDateString();
             const savedDate = localStorage.getItem('adsDate');
@@ -158,38 +149,27 @@
             updateUI();
         }
         
-        // Update UI
         function updateUI() {
             document.getElementById('counter').textContent = adsCount;
             const progress = (adsCount / maxAds) * 100;
             const offset = fullCircumference - (fullCircumference * progress / 100);
             document.getElementById('progressCircle').style.strokeDashoffset = offset;
             
-            // Add/remove dynamic pulse
-            const btn1 = document.getElementById('watchAdBtn');
-            const btn2 = document.getElementById('watchRewardedBtn');
+            const btn1 = document.getElementById('watchInterstitialBtn');
+            const btn2 = document.getElementById('watchPopupBtn');
             if (adsCount >= maxAds) {
-                disableButtons();
+                btn1.disabled = true;
+                btn2.disabled = true;
                 btn1.classList.remove('btn-dynamic');
-                btn2.classList.remove('btn-dynamic-green');
+                btn2.classList.remove('btn-dynamic-popup');
             } else {
-                enableButtons();
+                btn1.disabled = false;
+                btn2.disabled = false;
                 btn1.classList.add('btn-dynamic');
-                btn2.classList.add('btn-dynamic-green');
+                btn2.classList.add('btn-dynamic-popup');
             }
         }
         
-        function disableButtons() {
-            document.getElementById('watchAdBtn').disabled = true;
-            document.getElementById('watchRewardedBtn').disabled = true;
-        }
-        
-        function enableButtons() {
-            document.getElementById('watchAdBtn').disabled = false;
-            document.getElementById('watchRewardedBtn').disabled = false;
-        }
-        
-        // Floating +1
         function showFloatingPlus() {
             const el = document.createElement('div');
             el.textContent = '+1';
@@ -198,7 +178,6 @@
             setTimeout(() => el.remove(), 1400);
         }
         
-        // Confetti
         function celebrate() {
             confetti({
                 particleCount: 120,
@@ -208,7 +187,6 @@
             });
         }
         
-        // Increment
         function incrementCount() {
             adsCount++;
             localStorage.setItem('adsCount', adsCount.toString());
@@ -221,35 +199,41 @@
             }
         }
         
-        // Show ad
-        function showAd(placement = 'regular') {
+        // Common ad show function
+        function showAd(type = '') {
             if (adsCount >= maxAds) {
                 document.getElementById('modal').classList.remove('hidden');
                 return;
             }
             
-            if (typeof window.mtgShowAd !== 'function') {
-                alert('Ad SDK loading... Try again.');
+            if (typeof show_10551429 !== 'function') {
+                alert('Ad SDK loading... Try again in a few seconds.');
                 return;
             }
             
             Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             
-            window.mtgShowAd({ requestVar: placement })
+            // Call with or without 'pop'
+            const adPromise = type === 'pop' ? show_10551429('pop') : show_10551429();
+            
+            adPromise
                 .then(() => {
+                    // Reward only if user watched fully
                     incrementCount();
                     Telegram.WebApp.HapticFeedback.notificationOccurred('success');
                 })
                 .catch((err) => {
-                    console.log('Ad closed:', err);
+                    console.log('Ad error/closed:', err);
                     Telegram.WebApp.HapticFeedback.notificationOccurred('error');
                 });
         }
         
-        document.getElementById('watchAdBtn').onclick = () => showAd('watch_ad');
-        document.getElementById('watchRewardedBtn').onclick = () => showAd('watch_rewarded');
+        // Button 1: Rewarded Interstitial (no param)
+        document.getElementById('watchInterstitialBtn').onclick = () => showAd('');
         
-        // Entrance animations
+        // Button 2: Rewarded Popup (with 'pop')
+        document.getElementById('watchPopupBtn').onclick = () => showAd('pop');
+        
         window.onload = () => {
             loadCount();
             document.querySelectorAll('[class*="opacity-0"]').forEach((el, i) => {
